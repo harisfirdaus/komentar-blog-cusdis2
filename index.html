@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Komentar</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+    }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>💬 Tinggalkan Komentar</h2>
+
+  <div id="cusdis_thread"
+       data-host="https://cusdis.com"
+       data-app-id="YOUR_APP_ID">
+  </div>
+
+  <script>
+    // Ambil parameter `id` dari URL
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("id");
+
+    // Kalau tidak ada id, fallback ke "default"
+    const pageId = slug || "default";
+    const pageUrl = slug 
+      ? `https://haris.super.site/all-post/${slug}` 
+      : "https://haris.super.site/";
+
+    // Atur atribut Cusdis
+    const thread = document.getElementById('cusdis_thread');
+    thread.setAttribute('data-page-id', pageId);
+    thread.setAttribute('data-page-url', pageUrl);
+    thread.setAttribute('data-page-title', slug ? slug.replace(/-/g, " ") : "Homepage");
+  </script>
+
+  <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</body>
+</html>
