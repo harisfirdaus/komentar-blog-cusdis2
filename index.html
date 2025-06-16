@@ -9,20 +9,10 @@
       margin: 0;
       padding: 20px;
       font-family: sans-serif;
-      background-color: white;
-      color: black;
     }
-
     h2 {
       margin-bottom: 10px;
       font-size: 20px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #1a1a1a;
-        color: white;
-      }
     }
   </style>
 </head>
@@ -37,6 +27,7 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("id");
+
     const pageId = slug || "default";
     const pageUrl = slug 
       ? `https://haris.super.site/all-post/${slug}` 
@@ -47,26 +38,11 @@
     thread.setAttribute('data-page-url', pageUrl);
     thread.setAttribute('data-page-title', slug ? slug.replace(/-/g, " ") : "Homepage");
 
-    // Fungsi untuk setel theme
-    function applyTheme(theme) {
-      thread.setAttribute('data-theme', theme);
+    // Deteksi dark mode dari preferensi browser atau Super.so
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-      // reload ulang iframe untuk mengaplikasikan theme baru
-      const iframe = document.querySelector('iframe[data-cusdis]');
-      if (iframe) {
-        const src = iframe.src;
-        iframe.src = src;
-      }
-    }
-
-    // Set tema awal
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(prefersDark ? 'dark' : 'light');
-
-    // Dengarkan perubahan tema
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      applyTheme(e.matches ? 'dark' : 'light');
-    });
+    // Atur tema secara eksplisit
+    thread.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
   </script>
 
   <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
