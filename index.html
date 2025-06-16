@@ -1,8 +1,4 @@
-<div id="cusdis_thread"
-     data-host="https://cusdis.com"
-     data-app-id="1f0f4961-7dff-4e85-828c-012202515f73"
-     data-theme="auto">
-</div>
+<div id="cusdis_container"></div>
 
 <script>
   const params = new URLSearchParams(window.location.search);
@@ -12,47 +8,42 @@
   const pageUrl = slug 
     ? `https://haris.super.site/all-post/${slug}` 
     : "https://haris.super.site/";
-
   const pageTitle = slug ? slug.replace(/-/g, " ") : "Homepage";
 
-  function renderCusdis(theme) {
-    const container = document.getElementById('cusdis_thread');
+  function injectCusdis(theme) {
+    const container = document.getElementById('cusdis_container');
+    container.innerHTML = `
+      <div id="cusdis_thread"
+           data-host="https://cusdis.com"
+           data-app-id="1f0f4961-7dff-4e85-828c-012202515f73"
+           data-page-id="${pageId}"
+           data-page-url="${pageUrl}"
+           data-page-title="${pageTitle}"
+           data-theme="${theme}">
+      </div>
+    `;
 
-    // Hapus widget lama (jika ada)
-    const oldIframe = container.querySelector('iframe');
-    if (oldIframe) container.innerHTML = '';
-
-    // Buat ulang div-nya
-    const div = document.createElement('div');
-    div.id = 'cusdis_thread';
-    div.dataset.host = "https://cusdis.com";
-    div.dataset.appId = "1f0f4961-7dff-4e85-828c-012202515f73";
-    div.dataset.pageId = pageId;
-    div.dataset.pageUrl = pageUrl;
-    div.dataset.pageTitle = pageTitle;
-    div.dataset.theme = theme;
-
-    container.replaceWith(div);
-
-    // Load ulang script-nya
-    const existing = document.querySelector('script[src="https://cusdis.com/js/cusdis.es.js"]');
-    if (existing) existing.remove();
+    const oldScript = document.querySelector('script[data-cusdis-script]');
+    if (oldScript) oldScript.remove();
 
     const script = document.createElement('script');
-    script.src = "https://cusdis.com/js/cusdis.es.js";
+    script.src = 'https://cusdis.com/js/cusdis.es.js';
     script.async = true;
     script.defer = true;
+    script.setAttribute('data-cusdis-script', 'true');
     document.body.appendChild(script);
   }
 
-  // Deteksi awal tema
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  renderCusdis(prefersDark ? 'dark' : 'light');
+  function getTheme() {
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
 
-  // Pantau perubahan dark/light mode (jika Super.so mengubah class `dark` di <html>)
+  // Load pertama
+  injectCusdis(getTheme());
+
+  // Pantau perubahan class HTML (untuk dark/light toggle)
   const observer = new MutationObserver(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    renderCusdis(isDark ? 'dark' : 'light');
+    injectCusdis(getTheme());
   });
 
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
